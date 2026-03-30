@@ -1,0 +1,1250 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le P'tit Clerc – Formation des Servants de Messe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --violet: #4a1942;
+    --violet-deep: #2d0f29;
+    --violet-mid: #6b2d61;
+    --violet-light: #8b4a7a;
+    --gold: #c9a227;
+    --gold-light: #e8c84a;
+    --gold-pale: #f0d878;
+    --ash: #c8bdb5;
+    --cream: #f5efe6;
+    --dark: #1a0d18;
+    --white: #fefcf8;
+    --red-liturgy: #8b1a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--violet-deep);
+    color: var(--cream);
+    font-family: 'Lora', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ====== BACKGROUND ANIMATED ====== */
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .bg-canvas::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, #6b1f5a44 0%, transparent 70%),
+                radial-gradient(ellipse 60% 80% at 20% 100%, #3a104433 0%, transparent 60%),
+                radial-gradient(ellipse 40% 50% at 80% 50%, #5a183344 0%, transparent 50%);
+  }
+
+  /* Stars / dust particles */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--gold-pale);
+    opacity: 0;
+    animation: twinkle var(--dur, 4s) var(--delay, 0s) infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: var(--op, 0.6); transform: scale(1); }
+  }
+
+  /* Candle flames */
+  .candle-wrap {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: candleFloat 3s ease-in-out infinite;
+  }
+  @keyframes candleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .candle-flame {
+    width: 16px;
+    height: 28px;
+    background: radial-gradient(ellipse at 50% 80%, #ffe066 0%, #ffb300 40%, #ff6600 80%, transparent 100%);
+    border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
+    animation: flicker 0.8s ease-in-out infinite alternate;
+    filter: blur(1px) drop-shadow(0 0 8px #ffb30099);
+    position: relative;
+    z-index: 2;
+  }
+  @keyframes flicker {
+    0% { transform: scaleX(1) scaleY(1) rotate(-2deg); opacity: 0.95; }
+    100% { transform: scaleX(0.85) scaleY(1.1) rotate(2deg); opacity: 1; }
+  }
+  .candle-body {
+    width: 14px;
+    height: 60px;
+    background: linear-gradient(to right, #e8d9c0, var(--cream), #d4c5aa);
+    border-radius: 3px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 15px #ffe06622;
+  }
+  .candle-drip {
+    position: absolute;
+    bottom: -4px;
+    width: 18px;
+    height: 8px;
+    background: #e8d9c0;
+    border-radius: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* ====== CROSS ORNAMENT ====== */
+  .cross-ornament {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 1.8rem;
+    animation: glowPulse 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px var(--gold));
+  }
+  @keyframes glowPulse {
+    0%, 100% { filter: drop-shadow(0 0 6px var(--gold)); }
+    50% { filter: drop-shadow(0 0 16px var(--gold-light)); }
+  }
+
+  /* ====== LAYOUT ====== */
+  #app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ====== HEADER ====== */
+  header {
+    text-align: center;
+    padding: 2.5rem 1rem 2rem;
+    position: relative;
+    border-bottom: 1px solid #ffffff18;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+
+  .header-ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .ornament-line {
+    height: 1px;
+    width: 80px;
+    background: linear-gradient(to right, transparent, var(--gold-light));
+  }
+  .ornament-line.right {
+    background: linear-gradient(to left, transparent, var(--gold-light));
+  }
+
+  .app-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 900;
+    color: var(--gold-light);
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 30px #c9a22755, 0 2px 4px #00000088;
+    line-height: 1.1;
+    margin-bottom: 0.3rem;
+  }
+  .app-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.8rem, 2vw, 1.05rem);
+    color: var(--ash);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .careme-badge {
+    display: inline-block;
+    margin-top: 0.8rem;
+    background: linear-gradient(135deg, var(--violet-mid), var(--violet));
+    border: 1px solid var(--gold);
+    padding: 0.25rem 1.2rem;
+    border-radius: 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    color: var(--gold-pale);
+    letter-spacing: 0.15em;
+    box-shadow: 0 0 20px #c9a22733;
+  }
+
+  /* ====== NAV TABS ====== */
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 1.5rem 1rem 0;
+    flex-wrap: wrap;
+  }
+  .nav-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--ash);
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    padding: 0.6rem 1.4rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    text-transform: uppercase;
+  }
+  .nav-btn:hover { color: var(--gold-pale); }
+  .nav-btn.active {
+    color: var(--gold-light);
+    border-bottom-color: var(--gold);
+  }
+  .nav-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+
+  /* ====== MAIN CONTENT ====== */
+  main {
+    flex: 1;
+    padding: 2rem 1rem 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .section { display: none; animation: fadeIn 0.5s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ====== CARDS ====== */
+  .card {
+    background: linear-gradient(135deg, #3a1535cc, #2a0d2acc);
+    border: 1px solid #ffffff15;
+    border-radius: 12px;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px #00000044;
+  }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .card-icon {
+    width: 28px; height: 28px;
+    background: var(--violet-mid);
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  .card p {
+    color: var(--cream);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  /* ====== LESSON STEPS ====== */
+  .steps-list {
+    list-style: none;
+    counter-reset: steps;
+  }
+  .steps-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+  .steps-list li::before {
+    content: counter(steps);
+    min-width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--dark);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ====== PROGRESS ====== */
+  .progress-track {
+    background: #ffffff18;
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--gold), var(--gold-light));
+    border-radius: 4px;
+    transition: width 1s ease;
+    box-shadow: 0 0 8px var(--gold);
+  }
+
+  /* ====== LESSONS LIST ====== */
+  .lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  .lesson-item {
+    background: linear-gradient(135deg, #3d1640cc, #251025cc);
+    border: 1px solid #ffffff18;
+    border-radius: 10px;
+    padding: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .lesson-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, #c9a22710);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .lesson-item:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 8px 25px #00000055; }
+  .lesson-item:hover::after { opacity: 1; }
+  .lesson-item.done { border-color: #44884488; }
+  .lesson-item.done .lesson-status { color: #7ec87e; }
+  .lesson-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: var(--gold-pale);
+    margin-bottom: 0.5rem;
+  }
+  .lesson-desc {
+    font-size: 0.82rem;
+    color: var(--ash);
+    line-height: 1.5;
+  }
+  .lesson-status {
+    position: absolute;
+    top: 0.8rem; right: 0.8rem;
+    font-size: 1rem;
+  }
+
+  /* ====== LESSON DETAIL ====== */
+  #lesson-detail { display: none; }
+  #lesson-detail.active { display: block; }
+
+  .back-btn {
+    background: transparent;
+    border: 1px solid #ffffff30;
+    color: var(--ash);
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Lora', serif;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.4rem;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { border-color: var(--gold); color: var(--gold-pale); }
+
+  /* ====== QUIZ ====== */
+  .quiz-question {
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+    padding: 1rem;
+    border-left: 3px solid var(--gold);
+    background: #ffffff08;
+    border-radius: 0 8px 8px 0;
+  }
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .quiz-opt {
+    background: #3a153588;
+    border: 1px solid #ffffff20;
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    cursor: pointer;
+    font-family: 'Lora', serif;
+    font-size: 0.95rem;
+    color: var(--cream);
+    text-align: left;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .quiz-opt:hover { border-color: var(--gold); background: #4a2244aa; transform: translateX(4px); }
+  .quiz-opt.correct { border-color: #4a9e4a; background: #1e4a1e88; color: #9de89d; }
+  .quiz-opt.wrong { border-color: #9e3a3a; background: #4a1a1a88; color: #e89d9d; }
+  .quiz-opt.disabled { cursor: not-allowed; pointer-events: none; }
+
+  .quiz-feedback {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: #1a3d1a88; border: 1px solid #4a8a4a; color: #b0e8b0; }
+  .quiz-feedback.ko { background: #3d1a1a88; border: 1px solid #8a4a4a; color: #e8b0b0; }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+  }
+  .btn {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--dark);
+    border: none;
+    padding: 0.7rem 1.8rem;
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 0 15px #c9a22744;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 20px #c9a22766; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn.secondary {
+    background: transparent;
+    color: var(--ash);
+    border: 1px solid #ffffff30;
+    box-shadow: none;
+  }
+  .btn.secondary:hover { color: var(--gold-pale); border-color: var(--gold); }
+
+  /* ====== SCORE ====== */
+  .score-display {
+    text-align: center;
+    padding: 2rem;
+  }
+  .score-circle {
+    width: 120px; height: 120px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    border: 4px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    background: radial-gradient(circle, #4a1942, #2d0f29);
+    box-shadow: 0 0 30px #c9a22744, inset 0 0 20px #00000055;
+    animation: scoreReveal 0.8s ease;
+  }
+  @keyframes scoreReveal {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .score-number {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+  .score-total {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--ash);
+  }
+  .score-msg {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold-pale);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ====== PRAYER SECTION ====== */
+  .prayer-card {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #3a1535cc, #2a0d2acc);
+    border: 1px solid #c9a22733;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .prayer-card::before {
+    content: '✦';
+    position: absolute;
+    top: -0.7rem; left: 50%; transform: translateX(-50%);
+    background: var(--violet-deep);
+    padding: 0 0.5rem;
+    color: var(--gold);
+    font-size: 1rem;
+  }
+  .prayer-latin {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--gold-pale);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+  .prayer-fr {
+    font-style: italic;
+    color: var(--ash);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  /* ====== SECTION TITLE ====== */
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem;
+    color: var(--gold-light);
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .section-intro {
+    color: var(--ash);
+    font-size: 0.9rem;
+    margin-bottom: 1.8rem;
+    font-style: italic;
+  }
+
+  /* ====== PROGRESS SECTION ====== */
+  .stars-row {
+    display: flex;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+  }
+  .star {
+    color: var(--gold);
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+  .star.empty { color: #ffffff22; }
+
+  .badge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .badge {
+    background: #3a1535aa;
+    border: 1px solid #ffffff18;
+    border-radius: 10px;
+    padding: 1rem 0.8rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .badge.earned {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, #4a1942, #3a0f35);
+    box-shadow: 0 0 15px #c9a22722;
+  }
+  .badge-icon { font-size: 2rem; margin-bottom: 0.4rem; }
+  .badge-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    color: var(--gold-pale);
+    margin-bottom: 0.2rem;
+  }
+  .badge-desc {
+    font-size: 0.7rem;
+    color: var(--ash);
+    font-style: italic;
+  }
+
+  /* ====== CAREME BANNER ====== */
+  .careme-banner {
+    background: linear-gradient(135deg, #5a1855cc, #3a0f35cc);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 0 25px #c9a22722;
+  }
+  .careme-icon { font-size: 2.5rem; flex-shrink: 0; }
+  .careme-text h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    margin-bottom: 0.3rem;
+    font-size: 1rem;
+  }
+  .careme-text p {
+    font-size: 0.85rem;
+    color: var(--ash);
+    line-height: 1.5;
+  }
+
+  /* ====== FOOTER ====== */
+  footer {
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid #ffffff10;
+    font-size: 0.78rem;
+    color: #ffffff44;
+    font-style: italic;
+  }
+
+  /* ====== SCROLL DÉCORATION ====== */
+  .scroll-deco {
+    text-align: center;
+    color: #c9a22744;
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    letter-spacing: 0.5em;
+  }
+
+  /* ====== TOOLTIP ====== */
+  .tooltip {
+    position: fixed;
+    background: var(--violet-deep);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.82rem;
+    color: var(--cream);
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    max-width: 220px;
+    box-shadow: 0 4px 20px #00000088;
+  }
+  .tooltip.visible { opacity: 1; }
+
+  @media (max-width: 600px) {
+    .lesson-grid { grid-template-columns: 1fr; }
+    .badge-grid { grid-template-columns: repeat(3, 1fr); }
+    main { padding: 1.5rem 0.8rem 2rem; }
+  }
+
+  /* Ash Wednesday floating embers */
+  .ember {
+    position: fixed;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    pointer-events: none;
+    z-index: 0;
+    animation: emberFloat linear infinite;
+    opacity: 0;
+  }
+  @keyframes emberFloat {
+    0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10% { opacity: 0.7; }
+    90% { opacity: 0.4; }
+    100% { transform: translateY(-10vh) translateX(var(--dx, 30px)); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-canvas" id="bgCanvas"></div>
+
+<!-- Candles -->
+<div class="candle-wrap" style="left:3%;bottom:0;" id="c1">
+  <div class="candle-flame"></div>
+  <div class="candle-body"><div class="candle-drip"></div></div>
+</div>
+<div class="candle-wrap" style="right:3%;bottom:0;" id="c2">
+  <div class="candle-flame"></div>
+  <div class="candle-body"><div class="candle-drip"></div></div>
+</div>
+<div class="candle-wrap" style="left:10%;bottom:0;opacity:0.5;transform:scale(0.7);">
+  <div class="candle-flame" style="animation-delay:-0.3s"></div>
+  <div class="candle-body"></div>
+</div>
+<div class="candle-wrap" style="right:10%;bottom:0;opacity:0.5;transform:scale(0.7);">
+  <div class="candle-flame" style="animation-delay:-0.5s"></div>
+  <div class="candle-body"></div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <header>
+    <div class="header-ornament">
+      <div class="ornament-line"></div>
+      <span class="cross-ornament">✟</span>
+      <div class="ornament-line right"></div>
+    </div>
+    <h1 class="app-title">Le P'tit Clerc</h1>
+    <p class="app-subtitle">Formation des Servants de Messe</p>
+    <span class="careme-badge">✦ Temps de Carême ✦</span>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" onclick="showSection('accueil')">🏠 Accueil</button>
+    <button class="nav-btn" onclick="showSection('lecons')">📖 Leçons</button>
+    <button class="nav-btn" onclick="showSection('quiz')">✏️ Quiz</button>
+    <button class="nav-btn" onclick="showSection('prieres')">🙏 Prières</button>
+    <button class="nav-btn" onclick="showSection('progres')">⭐ Progrès</button>
+  </nav>
+
+  <main>
+    <!-- ======== ACCUEIL ======== -->
+    <section id="accueil" class="section active">
+
+      <div class="careme-banner">
+        <div class="careme-icon">🌿</div>
+        <div class="careme-text">
+          <h3>Temps de Carême – Prépare ton cœur</h3>
+          <p>Le Carême nous invite à la prière, au jeûne et au partage. En servant la Messe avec soin, tu participes à la liturgie sacrée. Que cette formation t'aide à mieux servir le Seigneur !</p>
+        </div>
+      </div>
+
+      <div class="card" style="text-align:center;padding:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">⛪</div>
+        <p style="font-family:'Cinzel',serif;font-size:1rem;color:var(--gold-pale);margin-bottom:0.8rem;">Bonjour, jeune servant !</p>
+        <p style="color:var(--ash);font-size:0.9rem;line-height:1.7;">Bienvenue dans l'application <strong style="color:var(--cream)">Le P'tit Clerc</strong>. Ici tu apprendras les gestes, les réponses et les prières du servant de messe. Avance à ton rythme, avec joie !</p>
+        <div class="scroll-deco">✦ · ✦ · ✦</div>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+          <button class="btn" onclick="showSection('lecons')">Commencer les Leçons</button>
+          <button class="btn secondary" onclick="showSection('quiz')">Tenter le Quiz</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:0.5rem;">
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">📖</div>
+          <div class="card-title" style="justify-content:center;">6 Leçons</div>
+          <p style="font-size:0.82rem;color:var(--ash);">Apprends les gestes et les paroles essentiels</p>
+        </div>
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">✏️</div>
+          <div class="card-title" style="justify-content:center;">Quiz interactifs</div>
+          <p style="font-size:0.82rem;color:var(--ash);">Teste tes connaissances avec des questions variées</p>
+        </div>
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">🏅</div>
+          <div class="card-title" style="justify-content:center;">Badges & Étoiles</div>
+          <p style="font-size:0.82rem;color:var(--ash);">Gagne des récompenses en progressant</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== LEÇONS ======== -->
+    <section id="lecons" class="section">
+      <div id="lessons-list">
+        <h2 class="section-title"><span>📖</span> Leçons du Servant</h2>
+        <p class="section-intro">Choisis une leçon pour commencer. Lis attentivement et apprends les gestes sacrés.</p>
+        <div class="lesson-grid" id="lessonGrid"></div>
+      </div>
+      <div id="lesson-detail"></div>
+    </section>
+
+    <!-- ======== QUIZ ======== -->
+    <section id="quiz" class="section">
+      <h2 class="section-title"><span>✏️</span> Quiz du Servant</h2>
+      <p class="section-intro">Réponds aux questions pour vérifier tes connaissances. Courage !</p>
+      <div id="quiz-container">
+        <div class="card" id="quiz-card">
+          <div id="quiz-progress-info" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <span style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--ash);" id="quiz-counter">Question 1/12</span>
+            <span style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--gold);" id="quiz-score-live">Score: 0</span>
+          </div>
+          <div class="progress-track" style="margin-bottom:1.5rem;">
+            <div class="progress-fill" id="quiz-prog-bar" style="width:8.33%;"></div>
+          </div>
+          <p class="quiz-question" id="quiz-q">Question...</p>
+          <div class="quiz-options" id="quiz-opts"></div>
+          <div class="quiz-feedback" id="quiz-fb"></div>
+          <div class="quiz-nav">
+            <span></span>
+            <button class="btn" id="quiz-next-btn" onclick="nextQuestion()" style="display:none;">Suivant →</button>
+          </div>
+        </div>
+        <div id="quiz-result" style="display:none;">
+          <div class="score-display">
+            <div class="score-circle">
+              <span class="score-number" id="score-num">0</span>
+              <span class="score-total" id="score-tot">/12</span>
+            </div>
+            <p class="score-msg" id="score-msg">Bravo !</p>
+            <p style="color:var(--ash);font-size:0.9rem;margin-bottom:1.5rem;font-style:italic;" id="score-detail"></p>
+            <button class="btn" onclick="restartQuiz()">↻ Recommencer</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== PRIÈRES ======== -->
+    <section id="prieres" class="section">
+      <h2 class="section-title"><span>🙏</span> Prières du Servant</h2>
+      <p class="section-intro">Ces prières liturgiques t'accompagnent avant, pendant et après la Messe.</p>
+
+      <div class="prayer-card">
+        <p class="prayer-latin">Introibo ad altare Dei</p>
+        <p class="prayer-fr">« J'irai à l'autel de Dieu, au Dieu de ma joie et de mon allégresse. »<br><em>– Psaume 42 –</em></p>
+      </div>
+
+      <div id="prayers-list"></div>
+    </section>
+
+    <!-- ======== PROGRÈS ======== -->
+    <section id="progres" class="section">
+      <h2 class="section-title"><span>⭐</span> Mon Progrès</h2>
+      <p class="section-intro">Suis ta progression et collecte tes badges de servant !</p>
+      <div class="card">
+        <div class="card-title"><div class="card-icon">📈</div> Avancement global</div>
+        <p style="margin-bottom:0.5rem;font-size:0.85rem;color:var(--ash);">Leçons complétées : <span id="prog-lessons" style="color:var(--gold);">0/6</span></p>
+        <div class="progress-track"><div class="progress-fill" id="prog-lessons-bar" style="width:0%;"></div></div>
+        <p style="margin-top:1rem;margin-bottom:0.5rem;font-size:0.85rem;color:var(--ash);">Quiz réussis : <span id="prog-quiz" style="color:var(--gold);">0</span></p>
+        <div class="progress-track"><div class="progress-fill" id="prog-quiz-bar" style="width:0%;"></div></div>
+      </div>
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold-pale);margin-bottom:0.5rem;margin-top:0.5rem;">Mes Badges</h3>
+      <div class="badge-grid" id="badge-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    ✟ Le P'tit Clerc – Formation des Servants de Messe – Temps de Carême ✟
+  </footer>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ===== DATA =====
+const LESSONS = [
+  {
+    id: 0,
+    name: "La Vocation du Servant",
+    emoji: "✟",
+    desc: "Comprendre le rôle sacré du servant de messe",
+    content: `
+<h3 style="font-family:'Cinzel',serif;color:var(--gold-light);margin-bottom:1rem;">La Vocation du Servant de Messe</h3>
+<p style="margin-bottom:1rem;">Le servant de messe assiste le prêtre à l'autel pendant la célébration eucharistique. C'est un ministère d'honneur, de service et de prière.</p>
+<ul class="steps-list">
+  <li>Le servant <strong>représente l'assemblée</strong> et aide le prêtre dans les gestes liturgiques.</li>
+  <li>Il doit avoir le <strong>cœur pur et le désir de servir</strong> Dieu et ses frères.</li>
+  <li>Sa présence rend la liturgie plus <strong>solennelle et ordonnée</strong>.</li>
+  <li>En Carême, le servant porte des <strong>vêtements sombres ou violets</strong>, couleur de pénitence.</li>
+  <li>C'est un honneur qui demande <strong>ponctualité, sérieux et prière</strong> personnelle.</li>
+</ul>
+<div class="scroll-deco" style="margin:1rem 0;">✦ · ✦ · ✦</div>
+<div class="card" style="background:#ffffff08;border-color:#c9a22733;">
+  <p style="font-style:italic;color:var(--gold-pale);">"Celui qui veut être le premier parmi vous sera le serviteur de tous."</p>
+  <p style="font-size:0.8rem;color:var(--ash);margin-top:0.3rem;">— Mc 10,44</p>
+</div>`,
+  },
+  {
+    id: 1,
+    name: "La Procession d'Entrée",
+    emoji: "🚶",
+    desc: "Les gestes de l'entrée à l'autel",
+    content: `
+<h3 style="font-family:'Cinzel',serif;color:var(--gold-light);margin-bottom:1rem;">La Procession d'Entrée</h3>
+<p style="margin-bottom:1rem;">La procession d'entrée est le premier moment du servant. Elle doit être faite avec gravité et recueillement.</p>
+<ul class="steps-list">
+  <li>Rejoindre la sacristie <strong>au moins 10 minutes avant</strong> la Messe pour s'habiller et prier.</li>
+  <li>En procession, marcher <strong>les mains jointes</strong>, paumes contre paumes, les doigts pointés vers le ciel.</li>
+  <li>Si tu portes la croix, <strong>tiens-la fermement des deux mains</strong> et marche le premier.</li>
+  <li>Arrivé à l'autel, faire une <strong>génuflexion profonde</strong> si le Saint-Sacrement est exposé.</li>
+  <li>Si le tabernacle est vide, faire une <strong>inclination profonde</strong> de la tête et du buste.</li>
+  <li>Prendre sa place et rester <strong>immobile et recueilli</strong>.</li>
+</ul>`,
+  },
+  {
+    id: 2,
+    name: "Les Réponses Liturgiques",
+    emoji: "🗣️",
+    desc: "Apprendre les réponses à la Messe",
+    content: `
+<h3 style="font-family:'Cinzel',serif;color:var(--gold-light);margin-bottom:1rem;">Les Réponses Liturgiques</h3>
+<p style="margin-bottom:1rem;">Le servant répond au nom de l'assemblée. Ces réponses doivent être dites <strong>clairement, posément</strong>, sans précipitation.</p>
+<ul class="steps-list">
+  <li>Prêtre : <em>"Le Seigneur soit avec vous."</em><br>Réponse : <strong>"Et avec votre esprit."</strong></li>
+  <li>Prêtre : <em>"Prions."</em><br>Réponse : <strong>(silence recueilli puis :)</strong> "Amen."</li>
+  <li>Avant l'Évangile : Prêtre : <em>"Évangile de Jésus-Christ…"</em><br>Réponse : <strong>"Gloire à toi, Seigneur."</strong></li>
+  <li>Après l'Évangile : <strong>"Louange à toi, Seigneur Jésus."</strong></li>
+  <li>Prêtre : <em>"Par le Christ, avec le Christ et en Christ…"</em><br>Réponse : <strong>"Amen !"</strong> (avec foi !)</li>
+  <li>Pendant le Carême, on ne dit <strong>pas "Alléluia"</strong> — remplacé par "Gloire et louange à toi…"</li>
+</ul>`,
+  },
+  {
+    id: 3,
+    name: "La Sonnette et l'Encensoir",
+    emoji: "🔔",
+    desc: "Utiliser les objets liturgiques correctement",
+    content: `
+<h3 style="font-family:'Cinzel',serif;color:var(--gold-light);margin-bottom:1rem;">La Sonnette et l'Encensoir</h3>
+<p style="margin-bottom:1rem;">Certains servants ont la responsabilité de la <strong>sonnette</strong> et/ou de l'<strong>encensoir</strong>. Ces gestes accompagnent les moments les plus sacrés.</p>
+<ul class="steps-list">
+  <li><strong>La sonnette</strong> : On sonne trois coups au moment de l'élévation (après la consécration du pain et du vin).</li>
+  <li>Écouter attentivement le prêtre pour savoir quand sonner : juste avant et juste après l'élévation.</li>
+  <li><strong>L'encensoir</strong> : Porter l'encensoir en le tenant par les chaînes, à bonne hauteur.</li>
+  <li>Présenter l'encensoir ouvert au prêtre pour qu'il y dépose l'encens.</li>
+  <li>Pendant l'encensement de l'autel, accompagner le prêtre de l'autre côté si nécessaire.</li>
+  <li>Ne jamais lâcher l'encensoir et faire attention aux braises — <strong>sécurité d'abord !</strong></li>
+</ul>`,
+  },
+  {
+    id: 4,
+    name: "L'Offertoire et la Communion",
+    emoji: "🍞",
+    desc: "Servir les offrandes et la communion",
+    content: `
+<h3 style="font-family:'Cinzel',serif;color:var(--gold-light);margin-bottom:1rem;">L'Offertoire et la Communion</h3>
+<p style="margin-bottom:1rem;">L'offertoire et la communion sont des moments intenses de la Messe. Le servant doit être attentif et habile.</p>
+<ul class="steps-list">
+  <li>À l'offertoire : apporter les <strong>burettes d'eau et de vin</strong> au prêtre avec les deux mains.</li>
+  <li>Tenir la burette correctement : pouce sur le bouchon, verser doucement quand le prêtre présente le calice.</li>
+  <li>Après le vin, présenter la burette d'eau et la petite serviette (<strong>manuterge</strong>) pour le lavabo.</li>
+  <li>Pendant la consécration : <strong>s'agenouiller</strong>, tête inclinée, mains jointes.</li>
+  <li>Pour la communion : tenir la <strong>patène</strong> sous le menton des communiants pour éviter que des parcelles tombent.</li>
+  <li>Après la communion : apporter à nouveau les burettes pour <strong>les ablutions</strong> du calice.</li>
+</ul>`,
+  },
+  {
+    id: 5,
+    name: "Le Renvoi et la Sacristie",
+    emoji: "🚪",
+    desc: "Bien terminer la Messe et ranger",
+    content: `
+<h3 style="font-family:'Cinzel',serif;color:var(--gold-light);margin-bottom:1rem;">Le Renvoi et la Sacristie</h3>
+<p style="margin-bottom:1rem;">La Messe ne se termine pas quand on quitte l'autel. Le retour en sacristie fait partie du service.</p>
+<ul class="steps-list">
+  <li>À l'envoi : <em>"Allez, la Messe est dite."</em> Réponse : <strong>"Nous rendons grâce à Dieu."</strong></li>
+  <li>Accompagner la procession de sortie dans le même ordre qu'à l'entrée.</li>
+  <li>En sacristie : saluer le prêtre et le remercier d'avoir célébré.</li>
+  <li><strong>Ranger les vêtements</strong> correctement (surplis, aube, ceinture).</li>
+  <li>Ranger les burettes, la patène, et tous les objets liturgiques utilisés.</li>
+  <li>Prendre un moment de <strong>prière silencieuse</strong> d'action de grâces avant de repartir.</li>
+</ul>
+<div class="card" style="background:#ffffff08;border-color:#c9a22733;margin-top:1rem;">
+  <p style="font-style:italic;color:var(--gold-pale);">"Servez le Seigneur avec joie !"</p>
+  <p style="font-size:0.8rem;color:var(--ash);margin-top:0.3rem;">— Psaume 100</p>
+</div>`,
+  },
+];
+
+const QUIZ_QUESTIONS = [
+  { q: "Quelle couleur liturgique est utilisée pendant le Carême ?", opts: ["Rouge","Vert","Violet","Blanc"], a: 2, expl: "Le violet est la couleur de la pénitence et de l'attente. Il est utilisé pendant le Carême et l'Avent." },
+  { q: "Que répond le servant quand le prêtre dit : « Le Seigneur soit avec vous » ?", opts: ["Amen","Et avec votre esprit","Gloire à Dieu","Merci Seigneur"], a: 1, expl: "« Et avec votre esprit » est la réponse liturgique correcte depuis la réforme de 2011." },
+  { q: "Combien de coups de sonnette sonne-t-on à l'élévation ?", opts: ["Un coup","Deux coups","Trois coups","Cinq coups"], a: 2, expl: "Trois coups signalent l'élévation de l'hostie et du calice au moment de la consécration." },
+  { q: "Comment s'appelle la petite serviette utilisée au lavabo ?", opts: ["Corporal","Purificatoire","Manuterge","Voile"], a: 2, expl: "Le manuterge (du latin manus = main) est la serviette sur laquelle le prêtre essuie ses mains au lavabo." },
+  { q: "Que dit-on à la place d'Alléluia pendant le Carême ?", opts: ["Hosanna","Gloire et louange à toi","Amen","Kyrie eleison"], a: 1, expl: "L'Alléluia est supprimé pendant le Carême par respect pour ce temps de pénitence. On chante un « acclamation » à la place." },
+  { q: "Quelle est la bonne position des mains en procession ?", opts: ["Le long du corps","Croisées dans le dos","Jointes, doigts vers le ciel","Dans les poches"], a: 2, expl: "Les mains jointes, paumes contre paumes, les doigts pointés vers le ciel, est le geste liturgique de la prière." },
+  { q: "Que sert à tenir la patène pendant la communion ?", opts: ["Décorer l'autel","Recueillir les parcelles de l'hostie","Porter les bougies","Sonner"], a: 1, expl: "La patène est tenue sous le menton des communiants pour éviter que de petites parcelles de l'Eucharistie tombent par terre." },
+  { q: "Quel psaume dit « Servez le Seigneur avec joie » ?", opts: ["Psaume 22","Psaume 42","Psaume 100","Psaume 150"], a: 2, expl: "Le Psaume 100 commence par : « Poussez vers Dieu des cris de joie, toute la terre ! Servez le Seigneur avec joie ! »" },
+  { q: "Que fait-on à l'entrée si le Saint-Sacrement est exposé dans le tabernacle ?", opts: ["Une inclination de tête","Une génuflexion profonde","On salue le prêtre","On s'assoit"], a: 1, expl: "On fait une génuflexion (un genou à terre) devant le Saint-Sacrement par respect pour la présence réelle du Christ." },
+  { q: "Que répondent les servants quand le prêtre dit l'envoi ?", opts: ["Alléluia","Amen","Nous rendons grâce à Dieu","Gloire à toi Seigneur"], a: 2, expl: "À « Allez, la Messe est dite » (Ite, Missa est), on répond : « Nous rendons grâce à Dieu. »" },
+  { q: "Pendant combien de semaines dure le Carême ?", opts: ["4 semaines","6 semaines","8 semaines","3 semaines"], a: 1, expl: "Le Carême dure 40 jours (6 semaines), du Mercredi des Cendres au Samedi Saint, en mémoire des 40 jours de Jésus au désert." },
+  { q: "Avec combien de mains doit-on tenir les burettes ?", opts: ["Une seule main","Deux mains","Avec des gants","Avec un plateau seulement"], a: 1, expl: "On tient les burettes avec les deux mains pour marquer le respect et éviter de les renverser." },
+];
+
+const PRAYERS = [
+  { title: "Avant la Messe", latin: "", fr: "Seigneur Jésus, je viens Te servir à Ton autel. Purifie mon cœur, guide mes pas, et fais de moi un humble serviteur de Ta gloire. Que mes gestes soient dignes de Ta présence. Amen." },
+  { title: "Anamnèse (Après la consécration)", latin: "Mortem tuam annuntiamus…", fr: "Nous proclamons ta mort, Seigneur Jésus. Nous célébrons ta résurrection. Nous attendons ta venue dans la gloire." },
+  { title: "Notre Père", latin: "Pater noster, qui es in caelis…", fr: "Notre Père, qui es aux cieux, que ton nom soit sanctifié, que ton règne vienne, que ta volonté soit faite sur la terre comme au ciel." },
+  { title: "Prière après la Messe", latin: "", fr: "Merci Seigneur pour ce moment de service. Que l'Eucharistie à laquelle j'ai participé renforce ma foi, mon espérance et ma charité. Aide-moi à vivre ce que j'ai célébré. Amen." },
+  { title: "Prière du Carême", latin: "", fr: "Seigneur, en ce temps de Carême, apprends-moi à Te chercher dans le silence, à jeûner avec joie, et à partager avec les autres. Que mon service à l'autel soit une offrande de tout mon être." },
+  { title: "Kyrie (Pénitence)", latin: "Kyrie, eleison. Christe, eleison. Kyrie, eleison.", fr: "Seigneur, prends pitié. Ô Christ, prends pitié. Seigneur, prends pitié." },
+];
+
+const BADGES = [
+  { id: "first", icon: "🕯️", name: "Première Flamme", desc: "Première leçon complétée", condition: s => s.lessons >= 1 },
+  { id: "scholar", icon: "📚", name: "Savant Novice", desc: "3 leçons complétées", condition: s => s.lessons >= 3 },
+  { id: "master", icon: "✟", name: "Servant Complet", desc: "Toutes les leçons faites", condition: s => s.lessons >= 6 },
+  { id: "quiz1", icon: "⭐", name: "Bonne Réponse", desc: "Premier quiz réussi", condition: s => s.quizzes >= 1 },
+  { id: "quiz3", icon: "🏆", name: "Maître du Quiz", desc: "3 quiz réussis", condition: s => s.quizzes >= 3 },
+  { id: "perfect", icon: "👑", name: "Sans Faute !", desc: "12/12 au quiz", condition: s => s.perfect >= 1 },
+];
+
+// ===== STATE =====
+let state = {
+  lessons: JSON.parse(localStorage.getItem('ptit_clerc_lessons') || '[]'),
+  quizzes: parseInt(localStorage.getItem('ptit_clerc_quizzes') || '0'),
+  perfect: parseInt(localStorage.getItem('ptit_clerc_perfect') || '0'),
+};
+
+let quizIdx = 0, quizScore = 0, quizAnswered = false;
+
+// ===== HELPERS =====
+function saveState() {
+  localStorage.setItem('ptit_clerc_lessons', JSON.stringify(state.lessons));
+  localStorage.setItem('ptit_clerc_quizzes', String(state.quizzes));
+  localStorage.setItem('ptit_clerc_perfect', String(state.perfect));
+}
+
+// ===== SECTIONS =====
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const navLabels = { accueil: '🏠', lecons: '📖', quiz: '✏️', prieres: '🙏', progres: '⭐' };
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.textContent.includes(navLabels[id])) b.classList.add('active');
+  });
+  if (id === 'lecons') renderLessons();
+  if (id === 'progres') renderProgress();
+  if (id === 'prieres') renderPrayers();
+}
+
+// ===== LESSONS =====
+function renderLessons() {
+  document.getElementById('lesson-detail').style.display = 'none';
+  document.getElementById('lesson-detail').classList.remove('active');
+  document.getElementById('lessons-list').style.display = '';
+  const grid = document.getElementById('lessonGrid');
+  grid.innerHTML = '';
+  LESSONS.forEach(l => {
+    const done = state.lessons.includes(l.id);
+    grid.innerHTML += `
+    <div class="lesson-item ${done ? 'done' : ''}" onclick="openLesson(${l.id})">
+      <span class="lesson-status">${done ? '✅' : '📌'}</span>
+      <div class="lesson-name">${l.emoji} ${l.name}</div>
+      <div class="lesson-desc">${l.desc}</div>
+    </div>`;
+  });
+}
+
+function openLesson(id) {
+  const l = LESSONS[id];
+  document.getElementById('lessons-list').style.display = 'none';
+  const det = document.getElementById('lesson-detail');
+  det.style.display = 'block';
+  det.classList.add('active');
+  const done = state.lessons.includes(id);
+  det.innerHTML = `
+    <button class="back-btn" onclick="backToLessons()">← Retour aux leçons</button>
+    <div class="card">
+      ${l.content}
+      <div style="margin-top:1.5rem;text-align:center;">
+        ${done
+          ? `<p style="color:#7ec87e;font-family:'Cinzel',serif;font-size:0.9rem;">✅ Leçon déjà complétée !</p>`
+          : `<button class="btn" onclick="completeLesson(${id})">✓ Marquer comme apprise</button>`}
+      </div>
+    </div>`;
+}
+
+function backToLessons() {
+  document.getElementById('lesson-detail').style.display = 'none';
+  document.getElementById('lesson-detail').classList.remove('active');
+  document.getElementById('lessons-list').style.display = '';
+}
+
+function completeLesson(id) {
+  if (!state.lessons.includes(id)) {
+    state.lessons.push(id);
+    saveState();
+  }
+  openLesson(id);
+}
+
+// ===== QUIZ =====
+function renderQuiz() {
+  const q = QUIZ_QUESTIONS[quizIdx];
+  document.getElementById('quiz-counter').textContent = `Question ${quizIdx+1}/${QUIZ_QUESTIONS.length}`;
+  document.getElementById('quiz-score-live').textContent = `Score : ${quizScore}`;
+  document.getElementById('quiz-prog-bar').style.width = `${((quizIdx+1)/QUIZ_QUESTIONS.length)*100}%`;
+  document.getElementById('quiz-q').textContent = q.q;
+  const opts = document.getElementById('quiz-opts');
+  opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    opts.innerHTML += `<button class="quiz-opt" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+  });
+  document.getElementById('quiz-fb').className = 'quiz-feedback';
+  document.getElementById('quiz-fb').textContent = '';
+  document.getElementById('quiz-next-btn').style.display = 'none';
+  quizAnswered = false;
+}
+
+function answer(idx) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = QUIZ_QUESTIONS[quizIdx];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.classList.add('disabled'));
+  const fb = document.getElementById('quiz-fb');
+  if (idx === q.a) {
+    opts[idx].classList.add('correct');
+    quizScore++;
+    fb.textContent = '✅ ' + q.expl;
+    fb.className = 'quiz-feedback ok show';
+  } else {
+    opts[idx].classList.add('wrong');
+    opts[q.a].classList.add('correct');
+    fb.textContent = '❌ ' + q.expl;
+    fb.className = 'quiz-feedback ko show';
+  }
+  document.getElementById('quiz-score-live').textContent = `Score : ${quizScore}`;
+  document.getElementById('quiz-next-btn').style.display = 'inline-block';
+  document.getElementById('quiz-next-btn').textContent = quizIdx === QUIZ_QUESTIONS.length - 1 ? 'Voir les résultats ✨' : 'Suivant →';
+}
+
+function nextQuestion() {
+  quizIdx++;
+  if (quizIdx >= QUIZ_QUESTIONS.length) {
+    showResult();
+  } else {
+    renderQuiz();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-card').style.display = 'none';
+  document.getElementById('quiz-result').style.display = 'block';
+  document.getElementById('score-num').textContent = quizScore;
+  document.getElementById('score-tot').textContent = `/${QUIZ_QUESTIONS.length}`;
+  const pct = quizScore / QUIZ_QUESTIONS.length;
+  let msg, detail;
+  if (pct === 1) { msg = "Parfait ! 🏆 Sans faute !"; detail = "Tu es un vrai maître servant ! Dieu est fier de toi."; }
+  else if (pct >= 0.8) { msg = "Excellent ! 👑 Très bien !"; detail = "Tu connais bien ta mission. Continue comme ça !"; }
+  else if (pct >= 0.6) { msg = "Bien joué ! ⭐"; detail = "Tu progresses bien ! Relis les leçons pour t'améliorer."; }
+  else if (pct >= 0.4) { msg = "Courage ! 🌿"; detail = "Continue à apprendre. Le Seigneur t'accompagne dans ta formation."; }
+  else { msg = "Ne te décourage pas ! 🕯️"; detail = "Relis les leçons et réessaie. Chaque progrès est un pas vers Dieu."; }
+  document.getElementById('score-msg').textContent = msg;
+  document.getElementById('score-detail').textContent = detail;
+
+  state.quizzes++;
+  if (quizScore === QUIZ_QUESTIONS.length) state.perfect++;
+  saveState();
+}
+
+function restartQuiz() {
+  quizIdx = 0; quizScore = 0; quizAnswered = false;
+  document.getElementById('quiz-card').style.display = 'block';
+  document.getElementById('quiz-result').style.display = 'none';
+  renderQuiz();
+}
+
+// ===== PRAYERS =====
+function renderPrayers() {
+  const container = document.getElementById('prayers-list');
+  container.innerHTML = '';
+  PRAYERS.forEach(p => {
+    container.innerHTML += `
+    <div class="card">
+      <div class="card-title"><div class="card-icon">🙏</div> ${p.title}</div>
+      ${p.latin ? `<p style="font-family:'Cinzel',serif;font-size:0.9rem;color:var(--gold-pale);margin-bottom:0.5rem;font-style:italic;">${p.latin}</p>` : ''}
+      <p style="color:var(--cream);font-size:0.93rem;line-height:1.8;">${p.fr}</p>
+    </div>`;
+  });
+}
+
+// ===== PROGRESS =====
+function renderProgress() {
+  const n = state.lessons.length;
+  document.getElementById('prog-lessons').textContent = `${n}/6`;
+  document.getElementById('prog-lessons-bar').style.width = `${(n/6)*100}%`;
+  document.getElementById('prog-quiz').textContent = state.quizzes;
+  document.getElementById('prog-quiz-bar').style.width = `${Math.min(state.quizzes/5*100, 100)}%`;
+
+  const grid = document.getElementById('badge-grid');
+  grid.innerHTML = '';
+  const s = { lessons: n, quizzes: state.quizzes, perfect: state.perfect };
+  BADGES.forEach(b => {
+    const earned = b.condition(s);
+    grid.innerHTML += `
+    <div class="badge ${earned ? 'earned' : ''}">
+      <div class="badge-icon">${b.icon}</div>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+    </div>`;
+  });
+}
+
+// ===== BACKGROUND ANIMATION =====
+function initBackground() {
+  const canvas = document.getElementById('bgCanvas');
+  // Particles
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      width:${1+Math.random()*3}px;
+      height:${1+Math.random()*3}px;
+      --dur:${3+Math.random()*4}s;
+      --delay:${Math.random()*5}s;
+      --op:${0.3+Math.random()*0.5};
+    `;
+    canvas.appendChild(p);
+  }
+  // Embers
+  function spawnEmber() {
+    const e = document.createElement('div');
+    e.className = 'ember';
+    const x = Math.random() * window.innerWidth;
+    const dur = 6 + Math.random() * 8;
+    const dx = (Math.random() - 0.5) * 80;
+    e.style.cssText = `left:${x}px;--dx:${dx}px;animation-duration:${dur}s;animation-delay:${Math.random()*3}s;`;
+    document.body.appendChild(e);
+    setTimeout(() => e.remove(), (dur + 3) * 1000);
+  }
+  setInterval(spawnEmber, 1200);
+}
+
+// ===== INIT =====
+initBackground();
+renderQuiz();
+</script>
+</body>
+</html>
